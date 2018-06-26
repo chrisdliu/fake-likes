@@ -1,6 +1,5 @@
-import sys, subprocess, json, requests, random
+import requests, random
 import datetime as dt
-import pprint as pp
 from bs4 import BeautifulSoup as BS
 from profile_parser import *
 
@@ -9,9 +8,14 @@ class Scraper:
     def __init__(self):
         self.last = dt.datetime.now()
         self.session = None
+        self.response = None
 
     def add_time(self):
-        self.last += dt.timedelta(seconds=random.uniform(2, 5))
+        if random.uniform(0, 1) >= 0.01:
+            self.last += dt.timedelta(seconds=random.uniform(2, 4))
+        else:
+            print('PAUSING...')
+            self.last += dt.timedelta(seconds=20)
 
     def safe(self):
         return dt.datetime.now() >= self.last
@@ -39,16 +43,25 @@ class Scraper:
         while not self.safe():
             pass
         self.add_time()
-        return self.session.get(url)
+        self.response = self.session.get(url)
+        return self.response
 
 
 def scrape_profile(scraper, fb_id):
     print('Scraping and parsing ' + fb_id)
     
-    profile = {'id': fb_id}
+    profile = {
+        'parsed': {},
+        'raw': {},
+        'id': fb_id,
+    }
+
+    if not validate(scraper, scrape_urls['about'].format(fb_id), profile):
+        return profile
+
     params = (scraper, fb_id, profile)
     print('\tAbout...')
-    parse_about(*params)
+    parse_about(*params, True)
     print('\tLikes...')
     parse_likes(*params)
     print('\tTimeline...')
