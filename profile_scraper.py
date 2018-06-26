@@ -12,7 +12,7 @@ class Scraper:
 
     def add_time(self):
         if random.uniform(0, 1) >= 0.01:
-            self.last += timedelta(seconds=random.uniform(0.5, 1))
+            self.last += timedelta(seconds=random.uniform(2, 4))
         else:
             print('PAUSING...')
             self.last += timedelta(seconds=20)
