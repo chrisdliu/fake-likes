@@ -2,6 +2,10 @@ import re, json
 from lxml import html
 
 
+MAX_LIKES = 100
+MAX_STORIES = 25
+
+
 scrape_urls = {
     'about': 'https://m.facebook.com/{}?v=info',
     'likes': 'https://m.facebook.com/{}?v=likes',
@@ -205,7 +209,7 @@ def parse_about(scraper, fb_id, profile, retrieved=False):
 
 def parse_likes(scraper, fb_id, profile):
     '''
-    Maximum 200
+    Number of likes capped
     '''
     likes = {}
     urls = [scrape_urls['likes'].format(fb_id)]
@@ -241,12 +245,12 @@ def parse_likes(scraper, fb_id, profile):
             except:
                 print('LIKE MORE ERROR')
 
-        if (len(likes) >= 200):
+        if (len(likes) >= MAX_LIKES):
             break
         
-    parsed['#page_likes'] = min(len(likes), 200)
+    parsed['#page_likes'] = min(len(likes), MAX_LIKES)
     raw_likes = [{'name': value, 'link': key} for key, value in likes.items()]
-    raw['page_likes'] = raw_likes[:200]
+    raw['page_likes'] = raw_likes[:MAX_LIKES]
 
 
 def parse_story(scraper, entry):
@@ -260,6 +264,15 @@ def parse_story(scraper, entry):
     except:
         pass
 
+    #attempt to get likes from timeline post if it is there
+    try:
+        likes = getallre(entry_text_list, likes_prog)[-1]
+        story['likes'] = int(likes)
+        return story
+    except:
+        pass
+
+    #get likes from story page
     try:
         url = 'https://m.facebook.com' + getall(entry_text_list, 'Full Story')[-1].getparent().get('href')
         r = scraper.get(url)
@@ -281,8 +294,9 @@ def parse_story(scraper, entry):
 
 
 def parse_timeline(scraper, fb_id, profile):
-    timeline = []
-    last = ''
+    timeline = profile['raw'].get('timeline', [])
+    last = profile['raw'].get('timeline_last', '')
+    first = profile['raw'].get('timeline_first', '')
     url = scrape_urls['timeline'].format(fb_id)
 
     parsed = profile['parsed']
@@ -299,9 +313,16 @@ def parse_timeline(scraper, fb_id, profile):
                 story = parse_story(scraper, entry)
                 if not last:
                     last = story['id']
+                first = story['id']
                 timeline.append(story)
+
+                if len(timeline) >= MAX_STORIES:
+                    break
         except:
             pass
+
+        if len(timeline) >= MAX_STORIES:
+            break
 
         try:
             more = container[1][0]
@@ -314,6 +335,8 @@ def parse_timeline(scraper, fb_id, profile):
 
     raw['timeline'] = timeline
     raw['timeline_last'] = last
+    raw['timeline_first'] = first
+    parsed['#stories'] = len(timeline)
     comments = [story['comments'] for story in raw['timeline']]
     parsed['#comments_total'] = sum(comments)
     parsed['#comments_max'] = max(comments)

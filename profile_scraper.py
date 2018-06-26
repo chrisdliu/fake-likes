@@ -1,24 +1,24 @@
-import requests, random
-import datetime as dt
+import requests, random, time
+from datetime import datetime, timedelta
 from bs4 import BeautifulSoup as BS
 from profile_parser import *
 
 
 class Scraper:
     def __init__(self):
-        self.last = dt.datetime.now()
+        self.last = datetime.now()
         self.session = None
         self.response = None
 
     def add_time(self):
         if random.uniform(0, 1) >= 0.01:
-            self.last += dt.timedelta(seconds=random.uniform(2, 4))
+            self.last += timedelta(seconds=random.uniform(0.5, 1))
         else:
             print('PAUSING...')
-            self.last += dt.timedelta(seconds=20)
+            self.last += timedelta(seconds=20)
 
     def safe(self):
-        return dt.datetime.now() >= self.last
+        return datetime.now() >= self.last
 
     def login(self, email, password):
         self.session = requests.Session()
@@ -41,7 +41,7 @@ class Scraper:
     def get(self, url):
         #print('\t\tGetting ' + url)
         while not self.safe():
-            pass
+            time.sleep(0.1)
         self.add_time()
         self.response = self.session.get(url)
         return self.response
@@ -56,15 +56,20 @@ def scrape_profile(scraper, fb_id):
         'id': fb_id,
     }
 
-    if not validate(scraper, scrape_urls['about'].format(fb_id), profile):
+    try:
+        if not validate(scraper, scrape_urls['about'].format(fb_id), profile):
+            return profile
+
+        params = (scraper, fb_id, profile)
+        print('\tAbout...')
+        parse_about(*params, True)
+        print('\tLikes...')
+        parse_likes(*params)
+        print('\tTimeline...')
+        parse_timeline(*params)
+
         return profile
-
-    params = (scraper, fb_id, profile)
-    print('\tAbout...')
-    parse_about(*params, True)
-    print('\tLikes...')
-    parse_likes(*params)
-    print('\tTimeline...')
-    parse_timeline(*params)
-
-    return profile
+    except:
+        print('PARSE ERROR')
+        profile['error'] = True
+        return profile
