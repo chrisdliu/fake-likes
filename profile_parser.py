@@ -78,6 +78,7 @@ def validate(scraper, url, profile):
 
     string = 'The page you requested cannot be displayed right now. It may be temporarily unavailable, the link you clicked on may be broken or expired, or you may not have permission to view this page.'
     if string in text_list:
+        profile['deleted'] = True
         return False
     else:
         return True
