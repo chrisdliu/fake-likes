@@ -19,5 +19,3 @@ for fb_id in ids:
 
 with open(output, 'w') as file:
     json.dump(profiles, file)
-
-pp.pprint(profiles)
