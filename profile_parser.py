@@ -183,10 +183,19 @@ def parse_about(scraper, fb_id, profile, retrieved=False):
             pass
 
     parsed['!gender'] = 'Gender' in text_list
+    parsed['?gender_male'] = 0
+    parsed['?gender_female'] = 0
+    parsed['?gender_other'] = 0
     raw['gender'] = ''
     if parsed['!gender']:
         try:
             raw['gender'] = get(text_list, 'Gender').getparent().getparent().getparent().getnext()[0].text
+            if raw['gender'].lower() == 'male':
+                parsed['?gender_male'] = 1
+            elif raw['gender'].lower() == 'female':
+                parsed['?gender_female'] = 1
+            else:
+                parsed['?gender_other'] = 1
         except:
             pass
 
