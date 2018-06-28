@@ -11,5 +11,5 @@ for profile in data:
 	if 'error' in profile:
 		errors.append(profile['id'])
 
-with opne('errors.json', 'w') as file:
+with open('errors.json', 'w') as file:
 	json.dump(errors, file)
