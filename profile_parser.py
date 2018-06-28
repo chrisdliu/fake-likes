@@ -3,7 +3,7 @@ from lxml import html
 
 
 MAX_LIKES = 100
-MAX_STORIES = 25
+MAX_STORIES = 50
 
 
 scrape_urls = {
@@ -305,7 +305,11 @@ def parse_timeline(scraper, fb_id, profile):
     while url:
         r = scraper.get(url)
         root = html.document_fromstring(r.content)
-        container = root.get_element_by_id('structured_composer_async_container')
+        
+        try:
+            container = root.get_element_by_id('structured_composer_async_container')
+        except:
+            break
 
         try:
             entries = container[0].getchildren()

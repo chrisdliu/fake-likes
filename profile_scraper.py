@@ -63,8 +63,8 @@ def scrape_profile(scraper, fb_id):
         params = (scraper, fb_id, profile)
         print('\tAbout...')
         parse_about(*params, True)
-        print('\tLikes...')
-        parse_likes(*params)
+        #print('\tLikes...')
+        #parse_likes(*params)
         print('\tTimeline...')
         parse_timeline(*params)
 
