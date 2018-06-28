@@ -7,6 +7,8 @@ with open(filepath, 'r') as file:
     data = json.load(file)
 
 for profile in data:
+    if 'deleted' in profile:
+        continue
     profile['parsed']['?gender_male'] = 0
     profile['parsed']['?gender_female'] = 0
     profile['parsed']['?gender_other'] = 0
