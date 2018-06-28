@@ -22,4 +22,4 @@ for profile in data:
             profile['parsed']['?gender_other'] = 1
 
 with open(filepath, 'w') as file:
-    json.dump(data, filepath)
+    json.dump(data, file)
