@@ -264,6 +264,8 @@ def parse_story(scraper, entry):
     except:
         pass
 
+    '''
+    #will mistake year for likes
     #attempt to get likes from timeline post if it is there
     try:
         likes = getallre(entry_text_list, likes_prog)[-1]
@@ -271,6 +273,7 @@ def parse_story(scraper, entry):
         return story
     except:
         pass
+    '''
 
     #get likes from story page
     try:
