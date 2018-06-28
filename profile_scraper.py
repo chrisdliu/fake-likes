@@ -69,7 +69,8 @@ def scrape_profile(scraper, fb_id):
         parse_timeline(*params)
 
         return profile
-    except:
+    except Exception as e:
         print('PARSE ERROR')
+        print('\t', e)
         profile['error'] = True
         return profile

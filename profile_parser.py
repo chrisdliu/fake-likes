@@ -353,13 +353,13 @@ def parse_timeline(scraper, fb_id, profile):
     raw['timeline_last'] = last
     raw['timeline_first'] = first
     parsed['#stories'] = len(timeline)
-    comments = [story['comments'] for story in raw['timeline']]
+    comments = [story['comments'] for story in timeline]
     parsed['#comments_total'] = sum(comments)
-    parsed['#comments_max'] = max(comments)
+    parsed['#comments_max'] = max(comments) if comments else 0
     parsed['#comments_avg'] = parsed['#comments_total'] / len(comments) if len(comments) else 0
-    likes = [story['likes'] for story in raw['timeline']]
+    likes = [story['likes'] for story in timeline]
     parsed['#likes_total'] = sum(likes)
-    parsed['#likes_max'] = max(likes)
+    parsed['#likes_max'] = max(likes) if likes else 0
     parsed['#likes_avg'] = parsed['#likes_total'] / len(likes) if len(likes) else 0
 
                 
