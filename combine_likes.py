@@ -14,7 +14,12 @@ for like in likes:
 	for fb_id, num in like.items():
 		for profile in data:
 			if profile['id'] == fb_id:
-				profile['parsed']['#page_likes'] = num
+				if num == None:
+					profile['parsed']['*page_likes'] = False
+					profile['parsed']['#page_likes'] = 0
+				else:
+					profile['parsed']['#page_likes'] = num
+					profile['parsed']['*page_likes'] = True
 				break
 
 with open(datapath, 'w') as datafile:
