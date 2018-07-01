@@ -30,7 +30,7 @@ async function writeLikes(profiles, data, api) {
     var profile = profiles[0];
 
     var url = 'https://m.facebook.com/' + profile['id'] + '?v=likes';
-    var time = Math.random() * 3000 + 2000;
+    var time = Math.random() * 3000 + 4000;
     sleep(time);
 
     var response = await api.getProfileLikes(url, sleep);
