@@ -105,7 +105,7 @@ def parse_about(scraper, fb_id, profile, retrieved=False):
     if 'Friends' in text_list:
         try:
             text = getre(text_list, friend_prog)
-            parsed['#friends'] = text[17:-1]
+            parsed['#friends'] = int(text[17:-1])
             parsed['*friends'] = True
         except:
             pass
