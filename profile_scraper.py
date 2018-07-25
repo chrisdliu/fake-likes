@@ -12,7 +12,7 @@ class Scraper:
 
     def add_time(self):
         if random.uniform(0, 1) >= 0.01:
-            self.last += timedelta(seconds=random.uniform(2, 4))
+            self.last += timedelta(seconds=random.uniform(4, 8))
         else:
             print('PAUSING...')
             self.last += timedelta(seconds=20)
@@ -74,3 +74,25 @@ def scrape_profile(scraper, fb_id):
         print('\t', e)
         profile['error'] = True
         return profile
+
+
+def add_profile_friends(scraper, profile):
+    print('Adding friends to ' + fb_id)
+
+    if 'deleted' in profile:
+        return profile
+
+    try:
+        print('\tFriends...')
+        parse_friends(scraper, profile)
+    except:
+        print('PARSE ERROR')
+        profile['error'] = True
+        return profile
+
+
+def profile_exists(scraper, fb_id):
+    print('Validating ' + fb_id)
+
+    return validate(scraper, scrape_urls['about'].format(fb_id), {})
+

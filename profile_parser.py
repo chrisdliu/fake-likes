@@ -10,6 +10,7 @@ scrape_urls = {
     'about': 'https://m.facebook.com/{}?v=info',
     'likes': 'https://m.facebook.com/{}?v=likes',
     'timeline': 'https://m.facebook.com/{}?v=timeline',
+    'friends': 'https://m.facebook.com/{}?v=friends',
 }
 
 empty_dicts = {
@@ -363,7 +364,51 @@ def parse_timeline(scraper, fb_id, profile):
     parsed['#likes_avg'] = parsed['#likes_total'] / len(likes) if len(likes) else 0
 
                 
+def parse_friends(scraper, profile):
+    url = scrape_urls['friends'].format(profile['id'])
 
+    raw = profile['raw']
+    raw['friends'] = []
+
+    try:
+        entries = root.get_element_by_id('objects_container').xpath('./div/div[1]/div[2]')[0].getchildren()
+        for entry in entries:
+            data = {
+                'name': entry.xpath('./table/tbody/tr/td[2]/a'),
+                'link': [entry.xpath('./table/tbody/tr/td[2]/div[2]/a'), href],
+            }
+            raw['friends'].append(stringify(data))
+    except:
+        pass
+
+    try:
+        more = root.get_element_by_id('m_more_friends')
+        scraper.get('https://m.facebook.com' + more.xpath('./a')[0].get('href'))
+        parse_friends_more(scraper, profile)
+    except:
+        pass
+
+
+def parse_friends_more(scraper, profile):
+    raw = profile['raw']
+
+    try:
+        entries = root.get_element_by_id('root').xpath('./div[1]/div[1]')[0].getchildren()
+        for entry in entries:
+            data = {
+                'name': entry.xpath('./table/tbody/tr/td[2]/a'),
+                'link': [entry.xpath('./table/tbody/tr/td[2]/div[2]/a'), href],
+            }
+            raw['friends'].append(stringify(data))
+    except:
+        pass
+
+    try:
+        more = root.get_element_by_id('m_more_friends')
+        scraper.get('https://m.facebook.com' + more.xpath('./a')[0].get('href'))
+        parse_friends_more(scraper, profile)
+    except:
+        pass
 
 '''
 def stringify(d, empty=True, f=lambda x: x if type(x) == str else x[0].text.strip()):
